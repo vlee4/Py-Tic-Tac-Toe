@@ -15,13 +15,21 @@ square_key = {
 }
 global round
 round = 1
+global game_status
+game_status = None
 
 
 def display_board(board):
   # The function accepts one parameter containing the board's current status
   # and prints it out to the console.
-  print(board)
-  return board
+  print("-------")
+  for i in range(len(board)):
+    print("|", end="")
+    for j in range(len(board[i])):
+      print(board[i][j], end="|")
+    print("\n")
+  print("------- \n \n")
+  return
 
 
 def enter_move(board):
@@ -59,9 +67,50 @@ def make_list_of_free_fields(board):
 
 
 def victory_for(board, sign):
+  global round
+
   # The function analyzes the board's status in order to check if
   # the player using 'O's or 'X's has won the game
-  return
+  def check_row(row, sign):
+    if board[row][0] == sign and board[row][1] == sign and board[row][
+        2] == sign:
+      return True
+    return False
+
+  def check_col(col, sign):
+    if board[0][col] == sign and board[1][col] == sign and board[2][
+        col] == sign:
+      return True
+    return False
+
+  def check_diag(col, sign):
+    if col == 0:
+      if board[0][col] == sign and board[1][1] == sign and board[2][2] == sign:
+        return True
+    elif board[0][col] == sign and board[1][1] == sign and board[2][0] == sign:
+      return True
+    return False
+
+  # check first row for any of sign
+  for i in range(1):
+    for j in range(len(board[i])):
+      if board[i][j] == sign and check_col(j, sign):
+        print(f"{sign} has won!")
+        return sign
+        #then check col
+  #check diagonals
+  if check_diag(0, sign) or check_diag(2, sign):
+    print(f"{sign} has won!")
+    return sign
+  # check entire first col for any of sign
+  for i in range(2):
+    if board[i][0] == sign and check_row(i, sign):
+      print(f"{sign} has won!")
+      return sign
+
+  if round == 9:
+    return "Tie"
+  return None
 
 
 def draw_move(board):
@@ -80,10 +129,26 @@ def draw_move(board):
   return board
 
 
-# draw_move(the_board)
-# print("Board:", display_board(the_board))
-# enter_move(the_board)
-# print("Board:", display_board(the_board))
-# print("Here's the free spacs", make_list_of_free_fields(the_board))
-# draw_move(the_board)
-# print("Board:", display_board(the_board))
+# display_board(the_board)
+
+# Loop turns until game is over
+while game_status is None and round < 10:
+  if round % 2 == 1:
+    print("Here's the board")
+    display_board(the_board)
+    print("Computer's turn")
+    draw_move(the_board)
+    game_status = victory_for(the_board, "X")
+
+  else:
+    print("Here's the board")
+    display_board(the_board)
+    print("User's turn")
+    enter_move(the_board)
+    game_status = victory_for(the_board, "O")
+
+else:
+  if game_status == "Tie":
+    print("Game over. It's a tie!")
+  else:
+    print(f"Game over. The winner is: {game_status}")
