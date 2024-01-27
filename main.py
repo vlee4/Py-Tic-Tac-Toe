@@ -35,19 +35,27 @@ def display_board(board):
 def enter_move(board):
   # The function accepts the board's current status, asks the user about their move,
   # checks the input, and updates the board according to the user's decision.
-  # letter = input("Please enter your letter: ")
   valid_move = False
   while not valid_move:
-    user_move = int(input("Enter your move: "))
-    #input is int and is b/t 1-9
-    if type(user_move) is int and user_move > 0 and user_move < 10:
-      #check if space in board is vacant
-      chosen_square = square_key[user_move]
-      row = chosen_square[0]
-      col = chosen_square[1]
-      if board[row][col] != "X" and board[row][col] != "O":
-        board[row][col] = "O"
-        valid_move = True
+    try:
+      user_move = int(input("Enter your move: "))
+      #input is int and is b/t 1-9
+      if type(user_move) is int and user_move > 0 and user_move < 10:
+        #check if space in board is vacant
+        chosen_square = square_key[user_move]
+        row = chosen_square[0]
+        col = chosen_square[1]
+        if board[row][col] != "X" and board[row][col] != "O":
+          board[row][col] = "O"
+          valid_move = True
+        else:
+          print("That space is already taken. Try a different space.")
+          continue
+      else:
+        print("Invalid move. Please inter a number 1-9.")
+    except ValueError:
+      print("Invalid move. Please inter a number 1-9.")
+      continue
   global round
   round += 1
   return board
@@ -56,7 +64,6 @@ def enter_move(board):
 def make_list_of_free_fields(board):
   # The function browses the board and builds a list of all the free squares;
   # the list consists of tuples, while each tuple is a pair of row and column numbers.
-  # print("Board i received", board)
   free_spaces = []
   for i in range(len(board)):
     for j in range(len(board[i])):
@@ -67,10 +74,10 @@ def make_list_of_free_fields(board):
 
 
 def victory_for(board, sign):
-  global round
-
   # The function analyzes the board's status in order to check if
   # the player using 'O's or 'X's has won the game
+  global round
+
   def check_row(row, sign):
     if board[row][0] == sign and board[row][1] == sign and board[row][
         2] == sign:
@@ -95,33 +102,29 @@ def victory_for(board, sign):
   for i in range(1):
     for j in range(len(board[i])):
       if board[i][j] == sign and check_col(j, sign):
-        print(f"{sign} has won!")
         return sign
         #then check col
   #check diagonals
   if check_diag(0, sign) or check_diag(2, sign):
-    print(f"{sign} has won!")
     return sign
   # check entire first col for any of sign
   for i in range(2):
     if board[i][0] == sign and check_row(i, sign):
-      print(f"{sign} has won!")
       return sign
 
-  if round == 9:
+  if round > 9:
     return "Tie"
   return None
 
 
 def draw_move(board):
-  global round
   # The function draws the computer's move and updates the board.
+  global round
   if round == 1:
     board[1][1] = "X"
   else:
     choices = make_list_of_free_fields(board)
     random_choice = randrange(len(choices))
-    # print("idx", random_choice, "square location", choices[random_choice])
     row = choices[random_choice][0]
     col = choices[random_choice][1]
     board[row][col] = "X"
@@ -129,25 +132,26 @@ def draw_move(board):
   return board
 
 
-# display_board(the_board)
-
 # Loop turns until game is over
 while game_status is None and round < 10:
   if round % 2 == 1:
     print("Here's the board")
     display_board(the_board)
-    print("Computer's turn")
+    print("It's now the Computer's turn")
     draw_move(the_board)
     game_status = victory_for(the_board, "X")
 
   else:
     print("Here's the board")
     display_board(the_board)
-    print("User's turn")
+    print("It's now the User's turn")
     enter_move(the_board)
     game_status = victory_for(the_board, "O")
 
 else:
+  print("+++++++++++++++++")
+  print("Here's the final board:")
+  display_board(the_board)
   if game_status == "Tie":
     print("Game over. It's a tie!")
   else:
