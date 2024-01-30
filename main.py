@@ -1,6 +1,5 @@
 from random import randrange
 
-print("Hello World")
 the_board = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
 square_key = {
     1: [0, 0],
